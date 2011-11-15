@@ -1,8 +1,8 @@
 .gradle/
 build/
+target/
 *~
 javaparser.iml
 javaparser.ipr
 javaparser.iws
 pom.xml
-
