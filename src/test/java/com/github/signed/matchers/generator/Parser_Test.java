@@ -113,21 +113,39 @@ public class Parser_Test {
         for (TypeDeclaration typeDeclaration : cu.getTypes()) {
             MethodVisitor methodVisitor = new MethodVisitor();
             typeDeclaration.accept(methodVisitor, null);
-            for (MethodDeclaration declaration : methodVisitor.getFactoryMethods()) {
+            for (MethodDeclaration methodDeclaration : methodVisitor.getFactoryMethods()) {
                 String thePackage = cu.getPackage().toString().replaceAll(";", "").replaceAll("package", "").trim();
                 String className = typeDeclaration.getName();
-                String methodName = declaration.getName();
+                String methodName = methodDeclaration.getName();
                 String fullQualifiedClassName = thePackage + "." + className;
-                String methodReturnType = getMethodReturnType(cu, declaration);
+                String methodReturnType = getMethodReturnType(cu, methodDeclaration);
+                Type type = methodDeclaration.getType();
+                ArrayList<Type> typeArgs = new ArrayList<Type>();
+                type.accept(new VoidVisitorAdapter<List<Type>>() {
+                    @Override
+                    public void visit(ClassOrInterfaceType n, List<Type> arg) {
+                        List<Type> typeArgs = n.getTypeArgs();
+                        arg.addAll(typeArgs);
+                    }
+                }, typeArgs);
 
                 FactoryMethod result = new FactoryMethod(fullQualifiedClassName, methodName, methodReturnType);
                 factoryMethods.add(result);
+
+
+                for(Type typeArgument:typeArgs){
+                    StringBuilder doIt = new StringBuilder();
+                    typeArgument.accept(new ClassNameExtractor(), doIt);
+                    String typeArg = getFullQualifiedTypeFromImports(cu, doIt.toString());
+                    result.setGenerifiedType(typeArg);
+                }
             }
         }
         return factoryMethods.iterator();
     }
 
     public static class FullQualifiedNameExtractor extends VoidVisitorAdapter<StringBuilder> {
+
         @Override
         public void visit(QualifiedNameExpr n, StringBuilder arg) {
             n.getQualifier().accept(this, arg);
@@ -142,36 +160,34 @@ public class Parser_Test {
 
     private String getMethodReturnType(CompilationUnit cu, MethodDeclaration declaration) {
         Type type = declaration.getType();
+        StringBuilder className = new StringBuilder();
         ClassNameExtractor extract = new ClassNameExtractor();
-        type.accept(extract, null);
-
-        for (ImportDeclaration importDeclaration : cu.getImports()) {
-            StringBuilder fullQualifiedName = new StringBuilder();
-                importDeclaration.accept(new FullQualifiedNameExtractor(), fullQualifiedName);
-            if (fullQualifiedName.toString().endsWith("." + extract.getName())) {
-                return fullQualifiedName.toString();
-            }
-        }
-        throw new RuntimeException("no import found");
+        type.accept(extract, className);
+        return getFullQualifiedTypeFromImports(cu, className.toString());
     }
 
-    private static class ClassNameExtractor extends VoidVisitorAdapter {
+    private String getFullQualifiedTypeFromImports(CompilationUnit cu, String typeName) {
+        for (ImportDeclaration importDeclaration : cu.getImports()) {
+            StringBuilder fullQualifiedNameOfImport = new StringBuilder();
+            importDeclaration.accept(new FullQualifiedNameExtractor(), fullQualifiedNameOfImport);
+            if (fullQualifiedNameOfImport.toString().endsWith("." + typeName)) {
+                return fullQualifiedNameOfImport.toString();
+            }
+        }
+        throw new RuntimeException("no import found '"+typeName+"'");
+    }
 
-        private String name;
+    private static class ClassNameExtractor extends VoidVisitorAdapter<StringBuilder> {
 
         @Override
-        public void visit(ReferenceType n, Object arg) {
+        public void visit(ReferenceType n, StringBuilder arg) {
             Type theTypeDeclaration = n.getType();
             theTypeDeclaration.accept(this, arg);
         }
 
         @Override
-        public void visit(ClassOrInterfaceType n, Object arg) {
-            name = n.getName();
-        }
-
-        public String getName() {
-            return name;
+        public void visit(ClassOrInterfaceType n, StringBuilder arg) {
+            arg.append(n.getName());
         }
     }
 }
