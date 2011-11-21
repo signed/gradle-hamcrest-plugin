@@ -68,6 +68,11 @@ public class Parser_Test {
         assertThat(actual.getGenerifiedType(), is(expected.getGenerifiedType()));
     }
 
+    @Test
+    public void sameGenerifiedTypeParameters() throws Exception {
+        assertThat(actual.getGenericTypeParameters(), is(expected.getGenericTypeParameters()));
+    }
+
     private static class MethodVisitor extends VoidVisitorAdapter {
         private List<MethodDeclaration> factoryMethods = new ArrayList<MethodDeclaration>();
 
@@ -108,7 +113,7 @@ public class Parser_Test {
             IOUtils.closeQuietly(in);
         }
         List<FactoryMethod> factoryMethods = Lists.newArrayList();
-        String path = "org.hamcrest.Factory";
+        String path = "org.com.github.signed.gradle.plugin.hamcrest.Factory";
 
         for (TypeDeclaration typeDeclaration : cu.getTypes()) {
             MethodVisitor methodVisitor = new MethodVisitor();
@@ -133,7 +138,7 @@ public class Parser_Test {
                 factoryMethods.add(result);
 
 
-                for(Type typeArgument:typeArgs){
+                for (Type typeArgument : typeArgs) {
                     StringBuilder doIt = new StringBuilder();
                     typeArgument.accept(new ClassNameExtractor(), doIt);
                     String typeArg = getFullQualifiedTypeFromImports(cu, doIt.toString());
@@ -174,7 +179,7 @@ public class Parser_Test {
                 return fullQualifiedNameOfImport.toString();
             }
         }
-        throw new RuntimeException("no import found '"+typeName+"'");
+        throw new RuntimeException("no import found '" + typeName + "'");
     }
 
     private static class ClassNameExtractor extends VoidVisitorAdapter<StringBuilder> {

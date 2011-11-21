@@ -1,17 +1,19 @@
-apply plugin: 'java'
+apply plugin: 'groovy'
 apply plugin: 'idea'
 
 repositories {
-    mavenCentral()
     maven {
         url 'http://localhost:8081/nexus/content/groups/public/'
         snapshotTimeout = 0
     }
+    mavenCentral()
 }
 
 sourceCompatibility = 1.6
 
 dependencies {
+    groovy localGroovy()
+    compile gradleApi()
     compile(
             ['org.hamcrest:hamcrest-generator:1.3.RC2']
           , ['com.google.code.javaparser:javaparser:1.0.8']

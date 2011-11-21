@@ -1,6 +1,7 @@
 package org.hamcrest.generator;
 
 import japa.parser.ast.CompilationUnit;
+import org.testng.internal.FactoryMethod;
 
 import java.lang.reflect.Method;
 import static java.lang.reflect.Modifier.isPublic;
@@ -77,24 +78,24 @@ public class JavaParserFactoryReader implements Iterable<FactoryMethod> {
      * <p/>
      * <p>The rules for determining this are:
      * 1. The method must be public static.
-     * 2. It must have a return type of org.hamcrest.Matcher (or something that extends this).
-     * 3. It must be marked with the org.hamcrest.Factory annotation.
+     * 2. It must have a return type of org.com.github.signed.gradle.plugin.hamcrest.Matcher (or something that extends this).
+     * 3. It must be marked with the org.com.github.signed.gradle.plugin.hamcrest.Factory annotation.
      * <p/>
      * <p>To use another set of rules, override this method.
      */
     @SuppressWarnings({"unchecked"})
     protected boolean isFactoryMethod(Method javaMethod) {
         // We dynamically load these classes, to avoid a compile time
-        // dependency on org.hamcrest.{Factory,Matcher}. This gets around
+        // dependency on org.com.github.signed.gradle.plugin.hamcrest.{Factory,Matcher}. This gets around
         // a circular bootstrap issue (because generator is required to
         // compile core).
         Class factoryCls;
         Class matcherCls;
         try {
-            factoryCls = classLoader.loadClass("org.hamcrest.Factory");
-            matcherCls = classLoader.loadClass("org.hamcrest.Matcher");
+            factoryCls = classLoader.loadClass("org.com.github.signed.gradle.plugin.hamcrest.Factory");
+            matcherCls = classLoader.loadClass("org.com.github.signed.gradle.plugin.hamcrest.Matcher");
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Cannot load hamcrest core", e);
+            throw new RuntimeException("Cannot load com.github.signed.gradle.plugin.hamcrest core", e);
         }
         return isStatic(javaMethod.getModifiers())
                 && isPublic(javaMethod.getModifiers())
