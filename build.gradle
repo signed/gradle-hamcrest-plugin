@@ -1,15 +1,27 @@
 apply plugin: 'groovy'
 apply plugin: 'idea'
+apply plugin: 'maven'
 
 repositories {
+    mavenCentral()
     maven {
         url 'http://localhost:8081/nexus/content/groups/public/'
         snapshotTimeout = 0
     }
-    mavenCentral()
 }
 
+group='com.github.signed.gradle.plugin'
+archivesBaseName = 'hamcrest-generator-source'
+version='0.0.1-SNAPSHOT'
 sourceCompatibility = 1.6
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "file://localhost/tmp/myRepo/")
+        }
+    }
+}
 
 dependencies {
     groovy localGroovy()
