@@ -41,8 +41,6 @@ class HamcrestPlugin implements Plugin<Project> {
             sugarGenerator.addWriter(new QuickReferenceWriter(System.out));
 
             SourceXmlConfigurator xmlConfigurator =  new SourceXmlConfigurator(sugarGenerator)
-//            XmlConfigurator xmlConfigurator = new XmlConfigurator(sugarGenerator, XmlConfigurator.class.getClassLoader());
-
             if (srcDirs.trim().length() > 0) {
                 for (String srcDir: srcDirs.split(",")) {
                     xmlConfigurator.addSourceDir(new File(srcDir));
