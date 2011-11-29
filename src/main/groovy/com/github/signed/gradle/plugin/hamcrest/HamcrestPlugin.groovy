@@ -1,8 +1,12 @@
 package com.github.signed.gradle.plugin.hamcrest;
 
 
+import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.tasks.compile.AbstractCompile
 import org.hamcrest.generator.HamcrestFactoryWriter
 import org.hamcrest.generator.QuickReferenceWriter
 import org.hamcrest.generator.SugarGenerator
@@ -11,6 +15,7 @@ import org.xml.sax.InputSource
 
 class HamcrestPlugin implements Plugin<Project> {
     def void apply(Project project) {
+        project.getPlugins().apply(JavaPlugin.class)
         project.task('generate-sugar') << {
             if (project.plugins.hasPlugin('java')) {
                 generateSugar(project)
@@ -18,6 +23,25 @@ class HamcrestPlugin implements Plugin<Project> {
             }
         }
         project.tasks.'generate-sugar'.description = 'Collects all factory methods and puts them in a single class'
+
+        project.getTasks().withType(AbstractCompile.class, new Action<Task>() {
+            @Override
+            public void execute(Task compileTask) {
+                compileTask.dependsOn(project.tasks.'generate-sugar');
+            }
+        });
+
+    }
+
+    private def generateSugar(Project project) {
+        println 'java plugin applied'
+        def sourcePaths = project.sourceSets*.java.srcDirs.flatten().join(',')
+        println sourcePaths
+        def destinationDir = new File(project.buildDir, 'generated-src')
+        //destinationDir.mkdirs()
+        println destinationDir
+        def configurationFile = new File("file-matchers.xml")
+        println "${configurationFile} exists: ${configurationFile.exists()}"
     }
 
     private def generateSyrup(Project project) {
@@ -26,7 +50,7 @@ class HamcrestPlugin implements Plugin<Project> {
         String fullClassName = 'com.github.signed.matcher.file.FileMatchers';
         File outputDir = new File(project.buildDir, 'generated-src')
 
-        String fileName = fullClassName.replace('.', File.separatorChar) + ".java";
+        String fileName = fullClassName.replace((char) '.', File.separatorChar) + ".java";
         int dotIndex = fullClassName.lastIndexOf(".");
         String packageName = dotIndex == -1 ? "" : fullClassName.substring(0, dotIndex);
         String shortClassName = fullClassName.substring(dotIndex + 1);
@@ -40,7 +64,7 @@ class HamcrestPlugin implements Plugin<Project> {
             sugarGenerator.addWriter(new HamcrestFactoryWriter(packageName, shortClassName, new FileWriter(outputFile)));
             sugarGenerator.addWriter(new QuickReferenceWriter(System.out));
 
-            SourceXmlConfigurator xmlConfigurator =  new SourceXmlConfigurator(sugarGenerator)
+            SourceXmlConfigurator xmlConfigurator = new SourceXmlConfigurator(sugarGenerator)
             if (srcDirs.trim().length() > 0) {
                 for (String srcDir: srcDirs.split(",")) {
                     xmlConfigurator.addSourceDir(new File(srcDir));
@@ -54,16 +78,5 @@ class HamcrestPlugin implements Plugin<Project> {
             sugarGenerator.close();
         }
 
-    }
-
-    private def generateSugar(Project project) {
-        println 'java plugin applied'
-        def sourcePaths = project.sourceSets*.java.srcDirs.flatten().join(',')
-        println sourcePaths
-        def destinationDir = new File(project.buildDir, 'generated-src')
-        //destinationDir.mkdirs()
-        println destinationDir
-        def configurationFile = new File("file-matchers.xml")
-        println "${configurationFile} exists: ${configurationFile.exists()}"
     }
 }
