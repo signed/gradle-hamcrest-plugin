@@ -14,7 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class Parser_Test {
     private ReflectiveFactoryReader reflectiveFactoryReader = new ReflectiveFactoryReader(IsADirectory.class);
     private FactoryMethod expected;
-    private final JavaParserFactoryReader reader = new JavaParserFactoryReader();
+    private final JavaParserFactoryReader reader = new JavaParserFactoryReader("src/test/java/com/github/signed/matchers/generator/samplematchers/IsADirectory.java");
 
     private FactoryMethod actual;
 
@@ -24,7 +24,7 @@ public class Parser_Test {
         iteratorExpected.hasNext();
         expected = iteratorExpected.next();
 
-        Iterator<FactoryMethod> iteratorActual = reader.testName("src/test/java/com/github/signed/matchers/generator/samplematchers/IsADirectory.java");
+        Iterator<FactoryMethod> iteratorActual = reader.testName();
         iteratorActual.hasNext();
         actual = iteratorActual.next();
     }
