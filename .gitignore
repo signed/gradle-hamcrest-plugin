@@ -2,7 +2,7 @@
 build/
 target/
 *~
-javaparser.iml
-javaparser.ipr
-javaparser.iws
+*.iml
+*.ipr
+*.iws
 pom.xml
