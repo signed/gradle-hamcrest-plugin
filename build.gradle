@@ -2,14 +2,6 @@ apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'maven'
 
-repositories {
-    mavenLocal()
-    maven {
-        url 'http://localhost:8081/nexus/content/groups/public/'
-        snapshotTimeout = 0
-    }
-}
-
 group='com.github.signed.gradle.plugin'
 version='0.0.1-SNAPSHOT'
 sourceCompatibility = 1.6
