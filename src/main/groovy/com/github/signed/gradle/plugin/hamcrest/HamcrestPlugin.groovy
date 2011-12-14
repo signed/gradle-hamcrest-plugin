@@ -15,14 +15,15 @@ import org.xml.sax.InputSource
 
 class HamcrestPlugin implements Plugin<Project> {
     def void apply(Project project) {
+        project.extensions.hamcrest = new HamcrestPluginExtension()
         project.getPlugins().apply(JavaPlugin.class)
         project.task('generate-sugar') << {
             if (project.plugins.hasPlugin('java')) {
-                generateSugar(project)
                 generateSyrup(project)
             }
         }
         project.tasks.'generate-sugar'.description = 'Collects all factory methods and puts them in a single class'
+        project.tasks.'generate-sugar'.conventionMapping.matcherClassPackage = {project.group}
 
         project.getTasks().withType(AbstractCompile.class, new Action<Task>() {
             @Override
@@ -33,21 +34,11 @@ class HamcrestPlugin implements Plugin<Project> {
 
     }
 
-    private def generateSugar(Project project) {
-        println 'java plugin applied'
-        def sourcePaths = project.sourceSets*.java.srcDirs.flatten().join(',')
-        println sourcePaths
-        def destinationDir = new File(project.buildDir, 'generated-src')
-        //destinationDir.mkdirs()
-        println destinationDir
-        def configurationFile = new File("file-matchers.xml")
-        println "${configurationFile} exists: ${configurationFile.exists()}"
-    }
-
     private def generateSyrup(Project project) {
-        String configFile = new File("file-matchers.xml").getAbsolutePath()
+        def configuration = project.hamcrest
+        String configFile = new File(configuration.configurationFile).getAbsolutePath()
         String srcDirs = project.sourceSets*.java.srcDirs.flatten().join(',')
-        String fullClassName = 'com.github.signed.matcher.file.FileMatchers';
+        String fullClassName = configuration.matcherClassPackage+'.'+configuration.matcherClass;
         File outputDir = new File(project.buildDir, 'generated-src')
 
         String fileName = fullClassName.replace((char) '.', File.separatorChar) + ".java";
