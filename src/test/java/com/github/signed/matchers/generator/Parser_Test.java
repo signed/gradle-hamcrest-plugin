@@ -36,7 +36,6 @@ public class Parser_Test {
         expected = iteratorExpected.next();
     }
 
-
     @Test
     public void sameMethodName() throws Exception {
         assertThat(actual.getName(), is(expected.getName()));
@@ -65,5 +64,10 @@ public class Parser_Test {
     @Test
     public void takeOverJavaDocFromFactoryMethod() throws Exception {
         assertThat(actual.getJavaDoc(), is(expected.getJavaDoc()));
+    }
+
+    @Test
+    public void takeTheExceptionsThrownByTheFactoryMethod(){
+        assertThat(actual.getExceptions().get(0), is(expected.getExceptions().get(0)));
     }
 }

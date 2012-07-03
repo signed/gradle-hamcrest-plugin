@@ -6,6 +6,7 @@ import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.TypeDeclaration;
+import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.type.ClassOrInterfaceType;
 import japa.parser.ast.type.Type;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
@@ -41,7 +42,7 @@ public class JavaParserFactoryReader implements Iterable<FactoryMethod> {
                 return fullQualifiedNameOfImport.toString();
             }
         }
-        throw new RuntimeException("no import found '" + typeName + "'");
+        return "java.lang." + typeName;
     }
 
     private String getMethodReturnType(CompilationUnit cu, MethodDeclaration declaration) {
@@ -80,6 +81,13 @@ public class JavaParserFactoryReader implements Iterable<FactoryMethod> {
                 }, typeArgs);
 
                 FactoryMethod result = new FactoryMethod(fullQualifiedClassName, methodName, methodReturnType);
+                List<NameExpr> aThrows = methodDeclaration.getThrows();
+                for (NameExpr aThrow : aThrows) {
+                    String name = aThrow.getName();
+                    String exception = getFullQualifiedTypeFromImports(cu, name);
+                    result.addException(exception);
+                }
+
                 factoryMethods.add(result);
 
 

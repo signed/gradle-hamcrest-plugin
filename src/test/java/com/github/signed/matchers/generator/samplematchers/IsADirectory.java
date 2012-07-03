@@ -9,8 +9,11 @@ import java.io.File;
 
 public class IsADirectory extends TypeSafeMatcher<File>{
 
+    /**
+     * Some JavaDoc
+     */
     @Factory
-    public static Matcher<File> aDirectory() {
+    public static Matcher<File> aDirectory() throws RuntimeException{
         return new IsADirectory();
     }
 
