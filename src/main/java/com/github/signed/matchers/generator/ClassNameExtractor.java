@@ -10,11 +10,13 @@ public class ClassNameExtractor extends VoidVisitorAdapter<StringBuilder> {
     @Override
     public void visit(ReferenceType n, StringBuilder arg) {
         Type theTypeDeclaration = n.getType();
+
         theTypeDeclaration.accept(this, arg);
     }
 
     @Override
     public void visit(ClassOrInterfaceType n, StringBuilder arg) {
+        n.getTypeArgs();
         arg.append(n.getName());
     }
 }

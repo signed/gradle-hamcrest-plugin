@@ -13,27 +13,17 @@ public class IsADirectory extends TypeSafeMatcher<File>{
      * Some JavaDoc
      */
     @Factory
-    public static Matcher<File> aDirectory() throws IllegalStateException, NullPointerException{
-        return new IsADirectory();
+    public static <First> Matcher<First> aDirectory() throws IllegalStateException, NullPointerException {
+        return null;
     }
 
     @Override
-    protected boolean matchesSafely(File file) {
-        return file.isDirectory();
+    protected boolean matchesSafely(File item) {
+        return false;
     }
 
     @Override
     public void describeTo(Description description) {
-        description.appendText("a directory");
-    }
-
-    @Override
-    protected void describeMismatchSafely(File item, Description mismatchDescription) {
-        mismatchDescription.appendValue(item);
-        if(item.exists()){
-            mismatchDescription.appendText(" is a file");
-        }else {
-            mismatchDescription.appendText(" does not exist");
-        }
+        //nothing to do, just a matcher to parse
     }
 }

@@ -1,9 +1,11 @@
 package com.github.signed.matchers.generator;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import japa.parser.JavaParser;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.ImportDeclaration;
+import japa.parser.ast.TypeParameter;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.TypeDeclaration;
 import japa.parser.ast.expr.NameExpr;
@@ -22,7 +24,7 @@ import java.util.List;
 public class JavaParserFactoryReader implements Iterable<FactoryMethod> {
     private CompilationUnit cu;
 
-    public JavaParserFactoryReader(String pathToFile){
+    public JavaParserFactoryReader(String pathToFile) {
         FileInputStream in = null;
         try {
             in = new FileInputStream(pathToFile);
@@ -50,10 +52,12 @@ public class JavaParserFactoryReader implements Iterable<FactoryMethod> {
         StringBuilder className = new StringBuilder();
         ClassNameExtractor extract = new ClassNameExtractor();
         type.accept(extract, className);
+
         return getFullQualifiedTypeFromImports(cu, className.toString());
     }
+
     public Iterator<FactoryMethod> testName() {
-        if(null == cu){
+        if (null == cu) {
             return Collections.<FactoryMethod>emptyList().iterator();
         }
         return readFromSource().iterator();
@@ -81,6 +85,24 @@ public class JavaParserFactoryReader implements Iterable<FactoryMethod> {
                 }, typeArgs);
 
                 FactoryMethod result = new FactoryMethod(fullQualifiedClassName, methodName, methodReturnType);
+
+                for (Type typeArgument : typeArgs) {
+                    StringBuilder doIt = new StringBuilder();
+                    typeArgument.accept(new ClassNameExtractor(), doIt);
+                    List<String> transformed = Lists.transform(methodDeclaration.getTypeParameters(), new Function<TypeParameter, String>() {
+                        @Override
+                        public String apply(TypeParameter input) {
+                            return input.getName();
+                        }
+                    });
+                    boolean isAGenericParameterOfTheMethod = transformed.contains(doIt.toString());
+                    String typeArg = doIt.toString();
+                    if (!isAGenericParameterOfTheMethod) {
+                         typeArg = getFullQualifiedTypeFromImports(cu, typeArg);
+                    }
+                    result.setGenerifiedType(typeArg);
+                }
+
                 List<NameExpr> aThrows = methodDeclaration.getThrows();
                 for (NameExpr aThrow : aThrows) {
                     String name = aThrow.getName();
@@ -88,14 +110,12 @@ public class JavaParserFactoryReader implements Iterable<FactoryMethod> {
                     result.addException(exception);
                 }
 
-                factoryMethods.add(result);
-
-                for (Type typeArgument : typeArgs) {
-                    StringBuilder doIt = new StringBuilder();
-                    typeArgument.accept(new ClassNameExtractor(), doIt);
-                    String typeArg = getFullQualifiedTypeFromImports(cu, doIt.toString());
-                    result.setGenerifiedType(typeArg);
+                List<TypeParameter> typeParameters = methodDeclaration.getTypeParameters();
+                for (TypeParameter typeParameter : typeParameters) {
+                    result.addGenericTypeParameter(typeParameter.getName());
                 }
+
+                factoryMethods.add(result);
             }
         }
         return factoryMethods;
