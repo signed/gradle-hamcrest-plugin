@@ -9,7 +9,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-class MethodVisitor extends VoidVisitorAdapter {
+class MethodVisitor extends VoidVisitorAdapter<Void> {
     private List<MethodDeclaration> factoryMethods = new ArrayList<MethodDeclaration>();
 
     public Iterable<MethodDeclaration> getFactoryMethods() {
@@ -17,7 +17,7 @@ class MethodVisitor extends VoidVisitorAdapter {
     }
 
     @Override
-    public void visit(MethodDeclaration methodDeclaration, Object arg) {
+    public void visit(MethodDeclaration methodDeclaration, Void arg) {
         boolean isStatic = ModifierSet.hasModifier(methodDeclaration.getModifiers(), Modifier.STATIC);
         boolean isPublic = ModifierSet.hasModifier(methodDeclaration.getModifiers(), Modifier.PUBLIC);
 
