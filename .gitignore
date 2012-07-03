@@ -7,3 +7,4 @@ target/
 *.iws
 pom.xml
 out/
+.idea/
