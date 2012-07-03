@@ -90,7 +90,6 @@ public class JavaParserFactoryReader implements Iterable<FactoryMethod> {
 
                 factoryMethods.add(result);
 
-
                 for (Type typeArgument : typeArgs) {
                     StringBuilder doIt = new StringBuilder();
                     typeArgument.accept(new ClassNameExtractor(), doIt);

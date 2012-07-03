@@ -68,6 +68,6 @@ public class Parser_Test {
 
     @Test
     public void takeTheExceptionsThrownByTheFactoryMethod(){
-        assertThat(actual.getExceptions().get(0), is(expected.getExceptions().get(0)));
+        assertThat(actual.getExceptions(), is(expected.getExceptions()));
     }
 }

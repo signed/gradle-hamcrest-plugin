@@ -13,7 +13,7 @@ public class IsADirectory extends TypeSafeMatcher<File>{
      * Some JavaDoc
      */
     @Factory
-    public static Matcher<File> aDirectory() throws RuntimeException{
+    public static Matcher<File> aDirectory() throws IllegalStateException, NullPointerException{
         return new IsADirectory();
     }
 
