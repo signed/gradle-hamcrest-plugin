@@ -13,6 +13,11 @@ uploadArchives {
     }
 }
 
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
 //dependencies {
 //    // mandatory dependencies for using Spock
 //    groovy("org.codehaus.groovy:groovy-all:1.7.5")

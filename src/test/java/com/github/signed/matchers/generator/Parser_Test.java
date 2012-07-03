@@ -2,6 +2,8 @@ package com.github.signed.matchers.generator;
 
 import com.github.signed.matchers.generator.samplematchers.IsADirectory;
 import org.hamcrest.generator.FactoryMethod;
+import org.hamcrest.generator.QDox;
+import org.hamcrest.generator.QDoxFactoryReader;
 import org.hamcrest.generator.ReflectiveFactoryReader;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,22 +14,28 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class Parser_Test {
+
     private ReflectiveFactoryReader reflectiveFactoryReader = new ReflectiveFactoryReader(IsADirectory.class);
+    private QDoxFactoryReader qdox = new QDoxFactoryReader(reflectiveFactoryReader, new QDox(), IsADirectory.class.getName());
     private FactoryMethod expected;
     private final JavaParserFactoryReader reader = new JavaParserFactoryReader("src/test/java/com/github/signed/matchers/generator/samplematchers/IsADirectory.java");
 
     private FactoryMethod actual;
 
     @Before
-    public void setUp() throws Exception {
-        Iterator<FactoryMethod> iteratorExpected = reflectiveFactoryReader.iterator();
-        iteratorExpected.hasNext();
-        expected = iteratorExpected.next();
-
+    public void loadActualWithStaticCodeAnalysis() throws Exception {
         Iterator<FactoryMethod> iteratorActual = reader.testName();
         iteratorActual.hasNext();
         actual = iteratorActual.next();
     }
+
+    @Before
+    public void loadExpectedWithHamcrestReflectiveFactory() throws Exception {
+        Iterator<FactoryMethod> iteratorExpected = qdox.iterator();
+        iteratorExpected.hasNext();
+        expected = iteratorExpected.next();
+    }
+
 
     @Test
     public void sameMethodName() throws Exception {
@@ -54,4 +62,8 @@ public class Parser_Test {
         assertThat(actual.getGenericTypeParameters(), is(expected.getGenericTypeParameters()));
     }
 
+    @Test
+    public void takeOverJavaDocFromFactoryMethod() throws Exception {
+        assertThat(actual.getJavaDoc(), is(expected.getJavaDoc()));
+    }
 }
