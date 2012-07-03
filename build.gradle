@@ -4,7 +4,8 @@ apply plugin: 'idea'
 
 group='com.github.signed.gradle.plugin'
 version='0.0.1-SNAPSHOT'
-sourceCompatibility = 1.6
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 uploadArchives {
     repositories {
