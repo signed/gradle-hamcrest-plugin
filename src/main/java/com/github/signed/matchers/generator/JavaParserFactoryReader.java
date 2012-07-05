@@ -63,19 +63,46 @@ public class JavaParserFactoryReader implements Iterable<FactoryMethod> {
         return readFromSource().iterator();
     }
 
+    public static class FactoryMethodBuilder {
+
+        private String fullQualifiedClassName;
+        private String methodName;
+        private String returnType;
+
+        public FactoryMethodBuilder isInClass(String fullQualifiedClassName) {
+            this.fullQualifiedClassName = fullQualifiedClassName;
+            return this;
+        }
+
+        public FactoryMethodBuilder isNamed(String methodName) {
+            this.methodName = methodName;
+            return this;
+        }
+
+        public FactoryMethodBuilder withReturnType(String fullQualifiedClassName) {
+            this.returnType = fullQualifiedClassName;
+            return this;
+        }
+
+        public FactoryMethod create() {
+            return new FactoryMethod(this.fullQualifiedClassName, this.methodName, returnType);
+        }
+    }
+
     private List<FactoryMethod> readFromSource() {
         List<FactoryMethod> factoryMethods = Lists.newArrayList();
         for (TypeDeclaration typeDeclaration : cu.getTypes()) {
+            FactoryMethodBuilder theFactoryMethod = new FactoryMethodBuilder();
             MethodVisitor methodVisitor = new MethodVisitor();
             typeDeclaration.accept(methodVisitor, null);
             for (MethodDeclaration methodDeclaration : methodVisitor.getFactoryMethods()) {
                 String thePackage = cu.getPackage().toString().replaceAll(";", "").replaceAll("package", "").trim();
                 String className = typeDeclaration.getName();
-                String methodName = methodDeclaration.getName();
-                String fullQualifiedClassName = thePackage + "." + className;
-                String methodReturnType = getMethodReturnType(cu, methodDeclaration);
+                theFactoryMethod.isInClass(thePackage + "." + className);
+                theFactoryMethod.withReturnType(getMethodReturnType(cu, methodDeclaration));
+                theFactoryMethod.isNamed(methodDeclaration.getName());
                 Type type = methodDeclaration.getType();
-                ArrayList<Type> typeArgs = new ArrayList<Type>();
+                ArrayList<Type> typeArgs = new ArrayList<>();
                 type.accept(new VoidVisitorAdapter<List<Type>>() {
                     @Override
                     public void visit(ClassOrInterfaceType n, List<Type> arg) {
@@ -84,7 +111,7 @@ public class JavaParserFactoryReader implements Iterable<FactoryMethod> {
                     }
                 }, typeArgs);
 
-                FactoryMethod result = new FactoryMethod(fullQualifiedClassName, methodName, methodReturnType);
+                FactoryMethod result = theFactoryMethod.create();
 
                 for (Type typeArgument : typeArgs) {
                     StringBuilder doIt = new StringBuilder();
@@ -98,7 +125,7 @@ public class JavaParserFactoryReader implements Iterable<FactoryMethod> {
                     boolean isAGenericParameterOfTheMethod = transformed.contains(doIt.toString());
                     String typeArg = doIt.toString();
                     if (!isAGenericParameterOfTheMethod) {
-                         typeArg = getFullQualifiedTypeFromImports(cu, typeArg);
+                        typeArg = getFullQualifiedTypeFromImports(cu, typeArg);
                     }
                     result.setGenerifiedType(typeArg);
                 }
