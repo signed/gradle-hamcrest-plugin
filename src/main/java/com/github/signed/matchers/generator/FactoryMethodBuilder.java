@@ -2,11 +2,13 @@ package com.github.signed.matchers.generator;
 
 import org.hamcrest.generator.FactoryMethod;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 
 public class FactoryMethodBuilder {
+
 
     private String fullQualifiedClassName;
     private String methodName;
@@ -14,6 +16,7 @@ public class FactoryMethodBuilder {
     private String genericPartOfReturnType;
     private final List<String> thrownExceptions = newArrayList();
     private final List<String> methodTypeParameters = newArrayList();
+    private final List<FactoryMethod.Parameter> parameters = new ArrayList<>();
 
     public FactoryMethodBuilder isInClass(String fullQualifiedClassName) {
         this.fullQualifiedClassName = fullQualifiedClassName;
@@ -45,6 +48,10 @@ public class FactoryMethodBuilder {
             factoryMethod.addGenericTypeParameter(methodTypeParameter);
         }
 
+        for (FactoryMethod.Parameter parameter : parameters) {
+            factoryMethod.addParameter(parameter.getType(), parameter.getName());
+        }
+
         return factoryMethod;
     }
 
@@ -55,6 +62,11 @@ public class FactoryMethodBuilder {
 
     public FactoryMethodBuilder withGenericTypeParameter(String typeParameter) {
         methodTypeParameters.add(typeParameter);
+        return this;
+    }
+
+    public FactoryMethodBuilder withParameter(String fullQualifiedClassName, String name) {
+        this.parameters.add(new FactoryMethod.Parameter(fullQualifiedClassName, name));
         return this;
     }
 }

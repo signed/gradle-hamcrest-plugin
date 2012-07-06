@@ -70,4 +70,9 @@ public class Parser_Test {
     public void takeTheExceptionsThrownByTheFactoryMethod(){
         assertThat(actual.getExceptions(), is(expected.getExceptions()));
     }
+
+    @Test
+    public void takeTheDeclaredParameters() {
+        assertThat(actual.getParameters().get(0).getType(), is(expected.getParameters().get(0).getType()));
+    }
 }
