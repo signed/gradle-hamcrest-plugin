@@ -126,12 +126,12 @@ public class JavaParserFactoryReader implements Iterable<FactoryMethod> {
             typeDeclaration.accept(methodVisitor, null);
 
             for (MethodDeclaration methodDeclaration : methodVisitor.getFactoryMethods()) {
-                retriveClassWhereMethodIsDeclared(theFactoryMethod, typeDeclaration);
-                retriveMethodReturnType(theFactoryMethod, methodDeclaration);
-                retriveMethodName(theFactoryMethod, methodDeclaration);
-                retriveGenericsPartOfReturnType(theFactoryMethod, methodDeclaration);
-                retriveThrownExceptions(theFactoryMethod, methodDeclaration);
-                retriveGenericTypeParameters(theFactoryMethod, methodDeclaration);
+                retrieveClassWhereMethodIsDeclared(theFactoryMethod, typeDeclaration);
+                retrieveMethodReturnType(theFactoryMethod, methodDeclaration);
+                retrieveMethodName(theFactoryMethod, methodDeclaration);
+                retrieveGenericsPartOfReturnType(theFactoryMethod, methodDeclaration);
+                retrieveThrownExceptions(theFactoryMethod, methodDeclaration);
+                retrieveGenericTypeParameters(theFactoryMethod, methodDeclaration);
 
                 factoryMethods.add(theFactoryMethod.create());
             }
@@ -139,29 +139,29 @@ public class JavaParserFactoryReader implements Iterable<FactoryMethod> {
         return factoryMethods;
     }
 
-    private void retriveClassWhereMethodIsDeclared(FactoryMethodBuilder theFactoryMethod, TypeDeclaration typeDeclaration) {
+    private void retrieveClassWhereMethodIsDeclared(FactoryMethodBuilder theFactoryMethod, TypeDeclaration typeDeclaration) {
         String thePackage = cu.getPackage().toString().replaceAll(";", "").replaceAll("package", "").trim();
         String className = typeDeclaration.getName();
 
         theFactoryMethod.isInClass(thePackage + "." + className);
     }
 
-    private void retriveMethodReturnType(FactoryMethodBuilder theFactoryMethod, MethodDeclaration methodDeclaration) {
+    private void retrieveMethodReturnType(FactoryMethodBuilder theFactoryMethod, MethodDeclaration methodDeclaration) {
         theFactoryMethod.withReturnType(getMethodReturnType(cu, methodDeclaration));
     }
 
-    private void retriveMethodName(FactoryMethodBuilder theFactoryMethod, MethodDeclaration methodDeclaration) {
+    private void retrieveMethodName(FactoryMethodBuilder theFactoryMethod, MethodDeclaration methodDeclaration) {
         theFactoryMethod.isNamed(methodDeclaration.getName());
     }
 
-    private void retriveGenericTypeParameters(FactoryMethodBuilder theFactoryMethod, MethodDeclaration methodDeclaration) {
+    private void retrieveGenericTypeParameters(FactoryMethodBuilder theFactoryMethod, MethodDeclaration methodDeclaration) {
         List<TypeParameter> typeParameters = methodDeclaration.getTypeParameters();
         for (TypeParameter typeParameter : typeParameters) {
             theFactoryMethod.withGenericTypeParameter(typeParameter.getName());
         }
     }
 
-    private void retriveThrownExceptions(FactoryMethodBuilder theFactoryMethod, MethodDeclaration methodDeclaration) {
+    private void retrieveThrownExceptions(FactoryMethodBuilder theFactoryMethod, MethodDeclaration methodDeclaration) {
         List<NameExpr> aThrows = methodDeclaration.getThrows();
         for (NameExpr aThrow : aThrows) {
             String name = aThrow.getName();
@@ -170,7 +170,7 @@ public class JavaParserFactoryReader implements Iterable<FactoryMethod> {
         }
     }
 
-    private void retriveGenericsPartOfReturnType(FactoryMethodBuilder theFactoryMethod, MethodDeclaration methodDeclaration) {
+    private void retrieveGenericsPartOfReturnType(FactoryMethodBuilder theFactoryMethod, MethodDeclaration methodDeclaration) {
         Type reference = methodDeclaration.getType();
         ArrayList<Type> typeArgs = new ArrayList<>();
         reference.accept(new VoidVisitorAdapter<List<Type>>() {
