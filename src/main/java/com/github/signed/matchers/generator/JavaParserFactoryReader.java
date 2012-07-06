@@ -1,6 +1,7 @@
 package com.github.signed.matchers.generator;
 
 import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import japa.parser.JavaParser;
 import japa.parser.ast.CompilationUnit;
@@ -62,11 +63,16 @@ public class JavaParserFactoryReader implements Iterable<FactoryMethod> {
         if (null == cu) {
             return Collections.<FactoryMethod>emptyList().iterator();
         }
-        return readFromSource().iterator();
+        return Iterables.transform(readFromSource(), new Function<FactoryMethodBuilder, FactoryMethod>() {
+            @Override
+            public FactoryMethod apply(FactoryMethodBuilder input) {
+                return input.create();
+            }
+        }).iterator();
     }
 
-    private List<FactoryMethod> readFromSource() {
-        List<FactoryMethod> factoryMethods = newArrayList();
+    private List<FactoryMethodBuilder> readFromSource() {
+        List<FactoryMethodBuilder> factoryMethods = newArrayList();
         for (TypeDeclaration typeDeclaration : cu.getTypes()) {
             MatcherFactoryMethodExtractor matcherFactoryMethodExtractor = new MatcherFactoryMethodExtractor();
             typeDeclaration.accept(matcherFactoryMethodExtractor, null);
@@ -80,7 +86,7 @@ public class JavaParserFactoryReader implements Iterable<FactoryMethod> {
                 retrieveMethodName(theFactoryMethod, methodDeclaration);
                 retrieveThrownExceptions(theFactoryMethod, methodDeclaration);
 
-                factoryMethods.add(theFactoryMethod.create());
+                factoryMethods.add(theFactoryMethod);
             }
         }
         return factoryMethods;

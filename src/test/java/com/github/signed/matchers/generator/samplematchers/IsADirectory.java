@@ -13,7 +13,7 @@ public class IsADirectory extends TypeSafeMatcher<File>{
      * Some JavaDoc
      */
     @Factory
-    public static <First> Matcher<First> aDirectory() throws IllegalStateException, NullPointerException {
+    public static <First> Matcher<First> aCreationMethod(ADependency dependency) throws IllegalStateException, NullPointerException {
         return null;
     }
 
