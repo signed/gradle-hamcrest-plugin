@@ -71,22 +71,39 @@ public class JavaParserFactoryReader implements Iterable<FactoryMethod> {
         }).iterator();
     }
 
+    public static class FactoryMethodContext {
+        public final MethodDeclaration methodDeclaration;
+        public final TypeDeclaration typeDeclaration;
+
+        public FactoryMethodContext(TypeDeclaration typeDeclaration, MethodDeclaration methodDeclaration) {
+            this.typeDeclaration = typeDeclaration;
+            this.methodDeclaration = methodDeclaration;
+        }
+    }
+
+    public static interface FactoryMethodPart {
+        void performStep(FactoryMethodBuilder builder, FactoryMethodContext context);
+    }
+
     private List<FactoryMethodBuilder> readFromSource() {
         List<FactoryMethodBuilder> factoryMethods = newArrayList();
         for (TypeDeclaration typeDeclaration : cu.getTypes()) {
             MatcherFactoryMethodExtractor matcherFactoryMethodExtractor = new MatcherFactoryMethodExtractor();
             typeDeclaration.accept(matcherFactoryMethodExtractor, null);
 
-            for (MethodDeclaration methodDeclaration : matcherFactoryMethodExtractor) {
-                FactoryMethodBuilder theFactoryMethod = new FactoryMethodBuilder();
-                retrieveClassWhereMethodIsDeclared(theFactoryMethod, typeDeclaration);
-                retrieveGenericTypeParameters(theFactoryMethod, methodDeclaration);
-                retrieveMethodReturnType(theFactoryMethod, methodDeclaration);
-                retrieveGenericsPartOfReturnType(theFactoryMethod, methodDeclaration);
-                retrieveMethodName(theFactoryMethod, methodDeclaration);
-                retrieveThrownExceptions(theFactoryMethod, methodDeclaration);
 
-                factoryMethods.add(theFactoryMethod);
+            for (MethodDeclaration methodDeclaration : matcherFactoryMethodExtractor) {
+                FactoryMethodContext context = new FactoryMethodContext(typeDeclaration, methodDeclaration);
+                FactoryMethodBuilder builder = new FactoryMethodBuilder();
+
+                new FactoryMethodContainingClass().performStep(builder, context);
+                new FactoryMethodGenericTypeParameter().performStep(builder, context);
+                new FactoryMethodReturnType().performStep(builder, context);
+                new FactoryMethodReturnTypesGenericType().performStep(builder, context);
+                new FactoryMethodName().performStep(builder, context);
+                new FactoryMethodExceptions().performStep(builder, context);
+
+                factoryMethods.add(builder);
             }
         }
         return factoryMethods;
@@ -156,5 +173,50 @@ public class JavaParserFactoryReader implements Iterable<FactoryMethod> {
     @Override
     public Iterator<FactoryMethod> iterator() {
         return testName();
+    }
+
+    private class FactoryMethodContainingClass implements FactoryMethodPart {
+        @Override
+        public void performStep(FactoryMethodBuilder builder, FactoryMethodContext context) {
+            retrieveClassWhereMethodIsDeclared(builder, context.typeDeclaration);
+        }
+    }
+
+    private class FactoryMethodGenericTypeParameter implements FactoryMethodPart {
+
+        @Override
+        public void performStep(FactoryMethodBuilder builder, FactoryMethodContext context) {
+            retrieveGenericTypeParameters(builder, context.methodDeclaration);
+        }
+    }
+
+    private class FactoryMethodReturnType implements FactoryMethodPart {
+        @Override
+        public void performStep(FactoryMethodBuilder builder, FactoryMethodContext context) {
+            retrieveMethodReturnType(builder, context.methodDeclaration);
+        }
+    }
+
+    private class FactoryMethodReturnTypesGenericType implements FactoryMethodPart {
+
+        @Override
+        public void performStep(FactoryMethodBuilder builder, FactoryMethodContext context) {
+            retrieveGenericsPartOfReturnType(builder, context.methodDeclaration);
+        }
+    }
+
+    private class FactoryMethodName implements FactoryMethodPart {
+        @Override
+        public void performStep(FactoryMethodBuilder builder, FactoryMethodContext context) {
+            retrieveMethodName(builder, context.methodDeclaration);
+        }
+    }
+
+    private class FactoryMethodExceptions implements FactoryMethodPart {
+
+        @Override
+        public void performStep(FactoryMethodBuilder builder, FactoryMethodContext context) {
+            retrieveThrownExceptions(builder, context.methodDeclaration);
+        }
     }
 }
