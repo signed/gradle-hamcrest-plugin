@@ -7,14 +7,11 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-class MethodVisitor extends VoidVisitorAdapter<Void> {
-    private List<MethodDeclaration> factoryMethods = new ArrayList<MethodDeclaration>();
-
-    public Iterable<MethodDeclaration> getFactoryMethods() {
-        return factoryMethods;
-    }
+class MatcherFactoryMethodExtractor extends VoidVisitorAdapter<Void> implements Iterable<MethodDeclaration>{
+    private List<MethodDeclaration> factoryMethods = new ArrayList<>();
 
     @Override
     public void visit(MethodDeclaration methodDeclaration, Void arg) {
@@ -30,5 +27,10 @@ class MethodVisitor extends VoidVisitorAdapter<Void> {
                 }
             }
         }
+    }
+
+    @Override
+    public Iterator<MethodDeclaration> iterator() {
+        return factoryMethods.iterator();
     }
 }
