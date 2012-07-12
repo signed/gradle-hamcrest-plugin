@@ -3,8 +3,9 @@ package com.github.signed.matchers.generator;
 import com.github.signed.matchers.generator.samplematchers.ADependency;
 import japa.parser.ParseException;
 import org.junit.Test;
-import org.mockito.Mockito;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -15,19 +16,19 @@ public class FactoryMethodParameters_Test {
 
     @Test
     public void extractFirstParameterName() throws Exception {
-        method.addParameter(ADependency.class, "dependency");
+        method.addParameter(ADependency.class, "parameterName");
         passToPartToExtractInformation();
 
-        verify(builder).withParameter(Mockito.any(String.class), Mockito.eq("dependency"));
+        verify(builder).withParameter(any(String.class), eq("parameterName"));
     }
 
     @Test
     public void extractSecondParameterName() throws Exception {
-        method.addParameter(ADependency.class, "dependency");
-        method.addParameter(ADependency.class, "anotherDependency");
+        method.addParameter(ADependency.class, "doNotCare");
+        method.addParameter(ADependency.class, "anotherArgument");
         passToPartToExtractInformation();
 
-        verify(builder).withParameter(Mockito.any(String.class), Mockito.eq("anotherDependency"));
+        verify(builder).withParameter(any(String.class), eq("anotherArgument"));
     }
 
     @Test
@@ -35,7 +36,7 @@ public class FactoryMethodParameters_Test {
         method.addParameter(String.class, "doNotCare");
         passToPartToExtractInformation();
 
-        verify(builder).withParameter(Mockito.eq("java.lang.String"), Mockito.any(String.class));
+        verify(builder).withParameter(eq("java.lang.String"), any(String.class));
     }
 
     private void passToPartToExtractInformation() throws ParseException {
