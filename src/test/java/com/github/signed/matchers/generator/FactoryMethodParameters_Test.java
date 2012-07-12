@@ -14,10 +14,13 @@ import static org.mockito.Mockito.verify;
 
 public class FactoryMethodParameters_Test {
     private final FactoryMethodBuilder builder = mock(FactoryMethodBuilder.class);
-    private JavaCompilationUnitBuilder compilationUnitBuilder = new JavaCompilationUnitBuilder();
+    private JavaCompilationUnitBuilder classWithFactoryMethods = new JavaCompilationUnitBuilder();
 
     @Test
     public void extractFirstParameterName() throws Exception {
+
+        HamcrestFactoryMethodBuilder method = classWithFactoryMethods.addFactoryMethod();
+
         FactoryMethodContext context = createContext();
 
         new FactoryMethodParameters().performStep(builder, context);
@@ -26,7 +29,7 @@ public class FactoryMethodParameters_Test {
     }
 
     private FactoryMethodContext createContext() throws ParseException {
-        StringInputStream inputStream = new StringInputStream(compilationUnitBuilder.createIt());
+        StringInputStream inputStream = new StringInputStream(classWithFactoryMethods.createIt());
         CompilationUnit parse = JavaParser.parse(inputStream);
         TypeDeclaration type = parse.getTypes().get(0);
         MatcherFactoryMethodExtractor matcherFactoryMethodExtractor = new MatcherFactoryMethodExtractor();
