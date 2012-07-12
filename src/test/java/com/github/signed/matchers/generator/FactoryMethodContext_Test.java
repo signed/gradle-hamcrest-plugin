@@ -30,8 +30,13 @@ public class FactoryMethodContext_Test {
 
     @Test
     public void detectClassesThatAreInTheSamePackage() throws Exception {
-        compilationUnit.setPackage(new PackageDeclaration(new NameExpr("same")));
+        theClassContainingTheFactoryMethodIsInPackage("same");
+
         assertThat(theReturnedFullQualifiedTypeNameFor("ATypeInTheSamePackageAsTheClassContainingTheFactoryMethod"), is("same.ATypeInTheSamePackageAsTheClassContainingTheFactoryMethod"));
+    }
+
+    private void theClassContainingTheFactoryMethodIsInPackage(String packageName) {
+        compilationUnit.setPackage(new PackageDeclaration(new NameExpr(packageName)));
     }
 
     private void addImportFor(String fullQualifiedClassName) {
