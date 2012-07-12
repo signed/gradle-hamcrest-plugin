@@ -7,25 +7,33 @@ import japa.parser.ast.body.TypeDeclaration;
 import japa.parser.ast.type.Type;
 
 public class FactoryMethodContext {
-    public final CompilationUnit cu;
+    public final CompilationUnit compilationUnit;
     public final MethodDeclaration methodDeclaration;
     public final TypeDeclaration typeDeclaration;
 
-    public FactoryMethodContext(CompilationUnit cu, TypeDeclaration typeDeclaration, MethodDeclaration methodDeclaration) {
-        this.cu = cu;
+    public FactoryMethodContext(CompilationUnit compilationUnit, TypeDeclaration typeDeclaration, MethodDeclaration methodDeclaration) {
+        this.compilationUnit = compilationUnit;
         this.typeDeclaration = typeDeclaration;
         this.methodDeclaration = methodDeclaration;
     }
 
     public String getFullQualifiedTypeFromImports(String typeName) {
-        for (ImportDeclaration importDeclaration : cu.getImports()) {
+        for (ImportDeclaration importDeclaration : compilationUnit.getImports()) {
             StringBuilder fullQualifiedNameOfImport = new StringBuilder();
             importDeclaration.accept(new FullQualifiedNameExtractor(), fullQualifiedNameOfImport);
             if (fullQualifiedNameOfImport.toString().endsWith("." + typeName)) {
                 return fullQualifiedNameOfImport.toString();
             }
         }
-        return "java.lang." + typeName;
+
+        String javaLangType = "java.lang." + typeName;
+
+        try {
+            Class.forName(javaLangType);
+            return javaLangType;
+        } catch (ClassNotFoundException e) {
+            return thePackage()+"."+typeName;
+        }
     }
 
     public String getMethodReturnType(MethodDeclaration declaration) {
@@ -39,5 +47,9 @@ public class FactoryMethodContext {
 
     public String getFullQualifiedTypeFromImports(Type type) {
         return getFullQualifiedTypeFromImports(type.toString());
+    }
+
+    public String thePackage() {
+        return compilationUnit.getPackage().toString().replaceAll(";", "").replaceAll("package", "").trim();
     }
 }

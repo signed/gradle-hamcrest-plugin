@@ -21,18 +21,29 @@ import java.util.List;
 public class JavaCompilationUnitBuilder {
     private final List<HamcrestFactoryMethodBuilder> methodBuilders = Lists.newArrayList();
     private final JCodeModel model = new JCodeModel();
+    private String fullQualifiedClassName = "apackage.AClass";
+    private boolean printSource = false;
 
     public String createIt() {
         try {
-            return internal();
+            String source = internal();
+            if (printSource) {
+                System.out.println(source);
+            }
+            return source;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+    public JavaCompilationUnitBuilder printSource() {
+        this.printSource = true;
+        return this;
+    }
+
     private String internal() throws JClassAlreadyExistsException, IOException {
         JClass toMatch = model.ref(File.class);
-        JDefinedClass theClass = model._class("com.github.signed.matchers.generator.samplematchers.IsADirectory");
+        JDefinedClass theClass = model._class(fullQualifiedClassName);
         theClass._extends(model.ref(TypeSafeMatcher.class).narrow(toMatch));
 
 
@@ -51,6 +62,11 @@ public class JavaCompilationUnitBuilder {
         HamcrestFactoryMethodBuilder hamcrestFactoryMethodBuilder = new HamcrestFactoryMethodBuilder(model);
         methodBuilders.add(hamcrestFactoryMethodBuilder);
         return hamcrestFactoryMethodBuilder;
+    }
+
+    public JavaCompilationUnitBuilder fullQualifiedName(String fullQualifiedClassName) {
+        this.fullQualifiedClassName = fullQualifiedClassName;
+        return this;
     }
 
     private static class ToStringCodeWriter extends CodeWriter {

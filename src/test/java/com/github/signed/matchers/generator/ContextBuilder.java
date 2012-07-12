@@ -7,9 +7,14 @@ import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.TypeDeclaration;
 import org.apache.tools.ant.filters.StringInputStream;
 
-public class FactoryContextBuilder {
+public class ContextBuilder {
 
     private JavaCompilationUnitBuilder classWithFactoryMethods = new JavaCompilationUnitBuilder();
+
+    public JavaCompilationUnitBuilder theFactoryMethodsAreInClass(String fullQualifiedClassName) {
+        classWithFactoryMethods.fullQualifiedName(fullQualifiedClassName);
+        return classWithFactoryMethods;
+    }
 
     public HamcrestFactoryMethodBuilder addFactoryMethod() {
         return classWithFactoryMethods.addFactoryMethod();

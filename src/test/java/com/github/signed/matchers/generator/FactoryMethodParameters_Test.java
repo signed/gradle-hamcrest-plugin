@@ -11,8 +11,8 @@ import static org.mockito.Mockito.verify;
 
 public class FactoryMethodParameters_Test {
     private final FactoryMethodBuilder builder = mock(FactoryMethodBuilder.class);
-    private final FactoryContextBuilder factoryContextBuilder = new FactoryContextBuilder();
-    private HamcrestFactoryMethodBuilder method = factoryContextBuilder.addFactoryMethod();
+    private final ContextBuilder contextBuilder = new ContextBuilder();
+    private HamcrestFactoryMethodBuilder method = contextBuilder.addFactoryMethod();
 
     @Test
     public void extractFirstParameterName() throws Exception {
@@ -40,7 +40,7 @@ public class FactoryMethodParameters_Test {
     }
 
     private void passToPartToExtractInformation() throws ParseException {
-        FactoryMethodContext context = factoryContextBuilder.createContext();
+        FactoryMethodContext context = contextBuilder.createContext();
         new FactoryMethodParameters().performStep(builder, context);
     }
 }
