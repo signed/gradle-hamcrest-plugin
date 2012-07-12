@@ -36,4 +36,8 @@ public class FactoryMethodContext {
 
         return getFullQualifiedTypeFromImports(className.toString());
     }
+
+    public String getFullQualifiedTypeFromImports(Type type) {
+        return getFullQualifiedTypeFromImports(type.toString());
+    }
 }

@@ -1,5 +1,6 @@
 package com.github.signed.matchers.generator;
 
+import com.github.signed.matchers.generator.samplematchers.ADependency;
 import japa.parser.JavaParser;
 import japa.parser.ParseException;
 import japa.parser.ast.CompilationUnit;
@@ -15,11 +16,11 @@ import static org.mockito.Mockito.verify;
 public class FactoryMethodParameters_Test {
     private final FactoryMethodBuilder builder = mock(FactoryMethodBuilder.class);
     private JavaCompilationUnitBuilder classWithFactoryMethods = new JavaCompilationUnitBuilder();
+    private HamcrestFactoryMethodBuilder method = classWithFactoryMethods.addFactoryMethod();
 
     @Test
     public void extractFirstParameterName() throws Exception {
-
-        HamcrestFactoryMethodBuilder method = classWithFactoryMethods.addFactoryMethod();
+        method.addParameter(ADependency.class, "dependency");
 
         FactoryMethodContext context = createContext();
 
@@ -27,6 +28,34 @@ public class FactoryMethodParameters_Test {
 
         verify(builder).withParameter(Mockito.any(String.class), Mockito.eq("dependency"));
     }
+
+
+    @Test
+    public void extractSecondParameterName() throws Exception {
+        method.addParameter(ADependency.class, "dependency");
+        method.addParameter(ADependency.class, "anotherDependency");
+
+        FactoryMethodContext context = createContext();
+
+        new FactoryMethodParameters().performStep(builder, context);
+
+        verify(builder).withParameter(Mockito.any(String.class), Mockito.eq("anotherDependency"));
+    }
+
+    @Test
+    public void extractFirstParameterType() throws Exception {
+        method.addParameter(String.class, "doNotCare");
+
+        FactoryMethodContext context = createContext();
+
+        new FactoryMethodParameters().performStep(builder, context);
+
+        verify(builder).withParameter(Mockito.eq("java.lang.String"), Mockito.any(String.class));
+    }
+
+
+
+
 
     private FactoryMethodContext createContext() throws ParseException {
         StringInputStream inputStream = new StringInputStream(classWithFactoryMethods.createIt());
