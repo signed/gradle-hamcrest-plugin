@@ -1,5 +1,6 @@
 package com.github.signed.matchers.generator;
 
+import japa.parser.ParseException;
 import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
@@ -7,7 +8,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 public class FactoryMethodExceptions_Test {
-
     private FactoryMethodBuilder builder = mock(FactoryMethodBuilder.class);
     private ContextBuilder contextBuilder = new ContextBuilder();
     private final HamcrestFactoryMethodBuilder hamcrestFactoryMethodBuilder = contextBuilder.addFactoryMethod();
@@ -15,7 +15,7 @@ public class FactoryMethodExceptions_Test {
 
     @Test
     public void ifThereAreNoExceptionsDoNotReportAny() throws Exception {
-        new FactoryMethodExceptions().performStep(builder, contextBuilder.createContext());
+        extractExceptions();
         verifyZeroInteractions(builder);
     }
 
@@ -24,9 +24,13 @@ public class FactoryMethodExceptions_Test {
         hamcrestFactoryMethodBuilder.thatThrows(IllegalStateException.class);
         hamcrestFactoryMethodBuilder.thatThrows(RuntimeException.class);
 
-        new FactoryMethodExceptions().performStep(builder, contextBuilder.createContext());
+        extractExceptions();
 
         verify(builder).throwsAn("java.lang.RuntimeException");
         verify(builder).throwsAn("java.lang.IllegalStateException");
+    }
+
+    private void extractExceptions() throws ParseException {
+        new FactoryMethodExceptions().performStep(builder, contextBuilder.createContext());
     }
 }
