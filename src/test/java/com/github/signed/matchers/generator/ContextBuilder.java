@@ -33,4 +33,10 @@ public class ContextBuilder {
     private MethodDeclaration methodDeclaration(MatcherFactoryMethodExtractor matcherFactoryMethodExtractor) {
         return matcherFactoryMethodExtractor.iterator().next();
     }
+
+    public ContextBuilder printSource() {
+        classWithFactoryMethods.printSource();
+        return this;
+
+    }
 }

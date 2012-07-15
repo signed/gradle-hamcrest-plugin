@@ -17,6 +17,7 @@ import java.util.List;
 public class HamcrestFactoryMethodBuilder {
     private final JCodeModel model;
     private final List<Parameter> parameters = Lists.newArrayList();
+    private final List<Class<? extends Throwable>> exceptions = Lists.newArrayList();
 
     public HamcrestFactoryMethodBuilder(JCodeModel model) {
         this.model = model;
@@ -30,8 +31,9 @@ public class HamcrestFactoryMethodBuilder {
         method.generify("First");
         JTypeVar first = method.typeParams()[0];
         method.type(matcher.narrow(first));
-        method._throws(IllegalStateException.class);
-        method._throws(NullPointerException.class);
+        for (Class<? extends Throwable> exception : exceptions) {
+            method._throws(exception);
+        }
         method.javadoc().add(0, "Some JavaDoc");
         for (Parameter parameter : parameters) {
             method.param(JMod.NONE, parameter.type, parameter.name);
@@ -41,6 +43,11 @@ public class HamcrestFactoryMethodBuilder {
     public HamcrestFactoryMethodBuilder addParameter(Class<?> type, String name) {
         JType modelType = model.ref(type);
         parameters.add(new Parameter(modelType, name));
+        return this;
+    }
+
+    public HamcrestFactoryMethodBuilder thatThrows(Class<? extends Throwable> exception) {
+        this.exceptions.add(exception);
         return this;
     }
 

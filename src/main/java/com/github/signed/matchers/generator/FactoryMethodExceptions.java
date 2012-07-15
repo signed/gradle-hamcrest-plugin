@@ -9,6 +9,9 @@ public class FactoryMethodExceptions implements FactoryMethodPart {
     @Override
     public void performStep(FactoryMethodBuilder builder, FactoryMethodContext context) {
         List<NameExpr> aThrows = context.methodDeclaration.getThrows();
+        if(null == aThrows) {
+            return;
+        }
         for (NameExpr aThrow : aThrows) {
             String name = aThrow.getName();
             String exception = context.getFullQualifiedTypeFromImports(name);
