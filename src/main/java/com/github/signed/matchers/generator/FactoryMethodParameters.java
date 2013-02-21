@@ -7,7 +7,7 @@ import java.util.List;
 public class FactoryMethodParameters implements  FactoryMethodPart{
     @Override
     public void performStep(FactoryMethodBuilder builder, FactoryMethodContext context) {
-        List<Parameter> parameters = context.methodDeclaration.getParameters();
+        List<Parameter> parameters = context.methodDeclarationParameters();
         for (Parameter parameter : parameters) {
             String fullQualifiedType = context.getFullQualifiedTypeFromImports(parameter.getType());
             builder.withParameter(fullQualifiedType, parameter.getId().getName());

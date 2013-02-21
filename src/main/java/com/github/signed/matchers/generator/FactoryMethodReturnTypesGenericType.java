@@ -28,7 +28,7 @@ public class FactoryMethodReturnTypesGenericType implements FactoryMethodPart {
         for (Type typeArgument : typeArgs) {
             StringBuilder doIt = new StringBuilder();
             typeArgument.accept(new ClassNameExtractor(), doIt);
-            List<String> transformed = Lists.transform(context.methodDeclaration.getTypeParameters(), new Function<TypeParameter, String>() {
+            List<String> transformed = Lists.transform(context.methodDeclarationTypeParameters(), new Function<TypeParameter, String>() {
                 @Override
                 public String apply(TypeParameter input) {
                     return input.getName();

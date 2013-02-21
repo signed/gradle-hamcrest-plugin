@@ -1,10 +1,18 @@
 package com.github.signed.matchers.generator;
 
+import com.google.common.base.Optional;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.ImportDeclaration;
+import japa.parser.ast.TypeParameter;
 import japa.parser.ast.body.MethodDeclaration;
+import japa.parser.ast.body.Parameter;
 import japa.parser.ast.body.TypeDeclaration;
 import japa.parser.ast.type.Type;
+
+import java.util.Collections;
+import java.util.List;
+
+import static com.google.common.base.Optional.fromNullable;
 
 public class FactoryMethodContext {
     public final CompilationUnit compilationUnit;
@@ -51,5 +59,15 @@ public class FactoryMethodContext {
 
     public String thePackage() {
         return compilationUnit.getPackage().toString().replaceAll(";", "").replaceAll("package", "").trim();
+    }
+
+    public List<TypeParameter> methodDeclarationTypeParameters() {
+        Optional<List<TypeParameter>> typeParameters = fromNullable(methodDeclaration.getTypeParameters());
+        return typeParameters.or(Collections.<TypeParameter>emptyList());
+    }
+
+    public List<Parameter> methodDeclarationParameters() {
+        Optional<List<Parameter>> parameters = fromNullable(methodDeclaration.getParameters());
+        return parameters.or(Collections.<Parameter>emptyList());
     }
 }

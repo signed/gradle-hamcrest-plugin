@@ -8,7 +8,7 @@ public class FactoryMethodGenericTypeParameter implements FactoryMethodPart {
 
     @Override
     public void performStep(FactoryMethodBuilder builder, FactoryMethodContext context) {
-        List<TypeParameter> typeParameters = context.methodDeclaration.getTypeParameters();
+        List<TypeParameter> typeParameters = context.methodDeclarationTypeParameters();
         for (TypeParameter typeParameter : typeParameters) {
             builder.withGenericTypeParameter(typeParameter.getName());
         }

@@ -6,11 +6,14 @@ group='com.github.signed.gradle.plugin'
 version='0.0.1-SNAPSHOT'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
+def user_home = System.getProperty("user.home")
+def repository_root = user_home+"/dev/mvn-repository"
 
 uploadArchives {
     repositories {
         mavenDeployer {
-            repository(url: "file://localhost/tmp/myRepo/")
+            repository(url: "file://localhost"+repository_root+"/release")
+            snapshotRepository(url: "file://localhost"+repository_root+"/snapshot");
         }
     }
 }
