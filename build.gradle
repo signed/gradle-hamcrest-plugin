@@ -35,7 +35,6 @@ dependencies {
           , ['com.google.code.javaparser:javaparser:1.0.8']
           , ['com.google.guava:guava:13.0-rc1']
           , ['commons-io:commons-io:2.3']
-          , ['org.codehaus.groovy:groovy-all:1.8.6']
     )
     testCompile(
             ['org.hamcrest:hamcrest-core:1.3.RC2']
@@ -46,6 +45,7 @@ dependencies {
           , ['com.sun.codemodel:codemodel:2.6']
     )
     compile gradleApi()
+    compile localGroovy()
 }
 
 task wrapper(type: Wrapper) {
