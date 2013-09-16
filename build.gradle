@@ -115,7 +115,7 @@ ext.nexusUsername = environment.repositoryLogin
 ext.nexusPassword = environment.repositoryPassword
 
 nexus {
-    sign = false
+    sign = true
     repositoryUrl = environment.urls.release
     snapshotRepositoryUrl = environment.urls.snapshot
 }
