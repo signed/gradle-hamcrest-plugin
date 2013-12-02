@@ -15,10 +15,11 @@ buildscript {
             url "http://localhost:8081/nexus/content/groups/public/"
         }
         mavenCentral()
+        jcenter()
     }
 
     dependencies {
-        classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.3'
+        classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.4'
     }
 }
 
