@@ -16,7 +16,7 @@ public class FactoryMethodBuilder {
     private String genericPartOfReturnType;
     private final List<String> thrownExceptions = newArrayList();
     private final List<String> methodTypeParameters = newArrayList();
-    private final List<FactoryMethod.Parameter> parameters = new ArrayList<>();
+    private final List<FactoryMethod.Parameter> parameters = new ArrayList<FactoryMethod.Parameter>();
 
     public FactoryMethodBuilder isInClass(String fullQualifiedClassName) {
         this.fullQualifiedClassName = fullQualifiedClassName;

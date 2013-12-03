@@ -15,7 +15,7 @@ public class FactoryMethodReturnTypesGenericType implements FactoryMethodPart {
     @Override
     public void performStep(FactoryMethodBuilder builder, FactoryMethodContext context) {
         Type reference = context.methodDeclaration.getType();
-        ArrayList<Type> typeArgs = new ArrayList<>();
+        ArrayList<Type> typeArgs = new ArrayList<Type>();
         reference.accept(new VoidVisitorAdapter<List<Type>>() {
             @Override
             public void visit(ClassOrInterfaceType n, List<Type> arg) {

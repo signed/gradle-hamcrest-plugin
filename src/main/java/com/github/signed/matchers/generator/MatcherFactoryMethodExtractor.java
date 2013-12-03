@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 
 class MatcherFactoryMethodExtractor extends VoidVisitorAdapter<Void> implements Iterable<MethodDeclaration>{
-    private List<MethodDeclaration> factoryMethods = new ArrayList<>();
+    private List<MethodDeclaration> factoryMethods = new ArrayList<MethodDeclaration>();
 
     @Override
     public void visit(MethodDeclaration methodDeclaration, Void arg) {
