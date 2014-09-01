@@ -12,7 +12,7 @@ class HamcrestPlugin implements Plugin<Project> {
     def void apply(Project project) {
         project.getPlugins().apply(JavaPlugin.class)
         project.extensions.hamcrest = new HamcrestPluginExtension()
-        project.tasks.add('generate-sugar', GenerateSugarTask.class)
+        project.tasks.create('generate-sugar', GenerateSugarTask.class)
         project.tasks.'generate-sugar'.description = 'Collects all factory methods and puts them in a single class'
         project.getTasks().withType(AbstractCompile.class, new Action<Task>() {
             @Override
