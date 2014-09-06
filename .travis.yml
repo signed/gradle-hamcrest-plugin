@@ -1,0 +1,10 @@
+language: java
+before_install: cat ~/.m2/settings.xml
+install: mvn clean test -DskipTests
+before_script: echo 'before_script'
+script: mvn clean install
+after_script: echo 'after_script'
+jdk:
+- oraclejdk7
+email:
+- thomas.heilbronner@gmail.com
