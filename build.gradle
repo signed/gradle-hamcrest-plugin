@@ -26,7 +26,7 @@ repositories{
 }
 
 group='com.github.signed.gradle.plugin'
-version='0.0.2-SNAPSHOT'
+version='0.0.3-SNAPSHOT'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
